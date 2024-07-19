@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>PP - Websockets</title>
+</head>
+
+<body>
+    <div class="center">
+        <h1>Amazing Chat Application</h1>
+        <h3 id="chat-header">Currently in chat: general</h3>
+
+        <!--
+        Here is a form that allows us to select what Chatroom to be in
+        -->
+        <form id="chatroom-selection">
+            <label for="chatroom">Chatroom:</label>
+            <input type="text" id="chatroom" name="chatroom"><br><br>
+            <input type="submit" value="Change chatroom">
+        </form>
+
+        <br>
+        <!--
+        Textarea to show messages from users
+        -->
+        <textarea class="messagearea" id="chatmessages" readonly name="chatmessages" rows="4" cols="50"
+            placeholder="Welcome to the general chatroom, here messages from others will appear"></textarea>
+
+        <br>
+        <!--
+        Chatroom-message form is used to send messages
+        -->
+        <form id="chatroom-message">
+            <label for="message">Message:</label>
+            <input type="text" id="message" name="message"><br><br>
+            <input type="submit" value="Send message">
+        </form>
+    </div>
+
+    <!--
+        Javascript that is used to Connect to Websocket and Handle New messages
+    -->
+    <script type="text/javascript">
+
+        // selectedchat is by default General.
+        var selectedchat = "general";
+
+        /**
+         * changeChatRoom will update the value of selectedchat
+         * and also notify the server that it changes chatroom
+         * */
+        function changeChatRoom() {
+            // Change Header to reflect the Changed chatroom
+            var newchat = document.getElementById("chatroom");
+            if (newchat != null && newchat.value != selectedchat) {
+                console.log(newchat);
+            }
+            return false;
+        }
+        /**
+         * sendMessage will send a new message onto the Websocket
+         * */
+         function sendMessage() {
+            var newmessage = document.getElementById("message");
+            if (newmessage != null) {
+                conn.send(newmessage.value);
+                newmessage.value = ""
+            }
+            return false;
+        }
+    
+         window.onload = function () {
+
+            document.getElementById("chatroom-selection").onsubmit = changeChatRoom;
+            document.getElementById("chatroom-message").onsubmit = sendMessage;
+
+            if (window["WebSocket"]) {
+                console.log("supports websockets");
+                conn = new WebSocket("ws://" + document.location.host + "/ws");
+            
+                conn.onmessage = function(evt) {
+                    console.log(evt);
+                }
+            
+            } else {
+                alert("Not supporting websockets");
+            }
+        };
+    </script>
+
+    
+<style>
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background: rgb(66, 56, 56);
+        color: #fff;
+        font-family: Arial, sans-serif;
+    }
+
+    .center {
+        width: 100%;
+        max-width: 600px;
+        padding: 20px;
+        background: #333;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+
+    h1, h3 {
+        text-align: center;
+    }
+
+    form {
+        margin-bottom: 20px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    input[type="text"], textarea {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #555;
+        border-radius: 5px;
+        background: #222;
+        color: #fff;
+    }
+
+    input[type="submit"] {
+        display: inline-block;
+        width: 100%;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        background: #28a745;
+        color: #fff;
+        cursor: pointer;
+    }
+
+    input[type="submit"]:hover {
+        background: #218838;
+    }
+
+    textarea {
+        resize: none;
+        height: 150px;
+    }
+</style>
+
+    </style>
+
+</body>
+
+</html>
+
