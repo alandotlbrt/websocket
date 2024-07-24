@@ -43,6 +43,7 @@ func (m *Manager) serveWS(w http.ResponseWriter, r *http.Request) {
 	}
 
 	client := NewClient(conn, m, roomID)
+
 	m.addClient(roomID, client)
 
 	go client.readMessages()
